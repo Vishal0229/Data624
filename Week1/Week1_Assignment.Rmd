@@ -1,0 +1,118 @@
+---
+title: "Time Series Week 1 Assignment"
+author: "Vishal Arora & Samriti Malhotra"
+date: "June 6, 2020"
+output:
+  word_document: default
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(fpp2)
+library(kableExtra)
+```
+
+##Question 2.1                  
+  
+Use the help function to explore what the series gold, woolyrnq and gas represent.                  
+
+Using help function to know more about the various datasets like a short description about the dataset,format of the dataset which in this case is Time Series data for all three datasets, what is Source of the data and example of how to dsiplay to learn about data using tsdisplay function.           
+
+```{r}
+help(gold)
+help("woolyrnq")
+help("gas")
+```
+
+
+Use autoplot() to plot each of these in separate plots.                            
+
+Using autoplot function can give us a graphic diaply of the ts datasets ,looking at graphs we can see if there is any trend , seanality or cyclic patterns in the datasets which can help us in selecting our model for prediction.                              
+
+```{r}
+autoplot(gold)
+autoplot(woolyrnq)
+autoplot(gas)
+```
+
+What is the frequency of each series? Hint: apply the frequency() function.             
+Using frequency function we find that  Gold has Yearly frequency , Woolrnq has Quarterly frequency and Gas has monthly freqnency.                       
+```{r}
+frequency(gold)
+frequency(woolyrnq)
+frequency(gas)
+```
+
+Use which.max() to spot the outlier in the gold series. Which observation was it?                   
+
+Using the which.max() function gives us the outlier with maximum value as also seen from the graph above, which is 770.                             
+
+```{r}
+which.max(gold)
+```
+##Question 2.3 :- 
+ Download some monthly Australian retail data from the book website. These represent retail sales in various categories for different Australian states, and are stored in a MS-Excel file.                 
+
+### a)  Read the data from excel file                   
+
+```{r}
+retaildata <- readxl::read_excel("retail.xlsx", skip=1)
+```
+### b) Select one of the time series as follows (but replace the column name with your own chosen column):                  
+
+
+
+```{r}
+# choosing column 'A3349721R'
+myts <- ts(retaildata[,"A3349721R"],frequency=12, start=c(1982,1), end=c(2005,6))
+head(myts)
+tail(myts,6)
+```
+
+
+### c) Explore your chosen retail time series using the following functions:autoplot(), ggseasonplot(), ggsubseriesplot(), gglagplot(), ggAcf().Can you spot any seasonality, cyclicity and trend? What do you learn about the series?                       
+
+
+Using autoplot function on ts dataset , we can see that there is indeed a trend and seasonality in the graph.                                            
+
+```{r}
+autoplot(myts)
+```
+
+
+Using the seasonplot , one can confirm what we deduced from the above plot that there is slight seasonlity pattern also in the data. Thus in sept is the peak and march is the trough season.                
+```{r}
+ggseasonplot((myts))
+```
+
+Using subseriesplot we can see the seasonality for each month for time span of time series.We can clearly see that september month is the peak and march and November are the troughs.           
+```{r}
+ggsubseriesplot(myts)
+```
+
+Lag plot show the scatterplots for each month and all the graphs show linearity thus it suggests a strong autocorrelations exits.                                 
+```{r}
+gglagplot(myts)
+```
+Using ggACF function to plot ACF graphs with differrent lag periods, It shows there exists a strong autocorrelations and also we can see with the increase in lag period the graphs show decrease positive values. With increase lag period in second graph we can there is a slight season pattern also.                         
+
+```{r}
+ggAcf(myts, lag=12)
+
+ggAcf(myts, lag=30)
+
+```
+## Summary 
+
+As we can clearly see that out data in second questions has a positive trend with a slight seasonality with no cyclic patterns. This can be corroborated by plotting using the decompose function and then autoplotting .                
+
+```{r}
+decmyts <-decompose(myts)
+autoplot(decmyts, type="multiplicative")
+```
+
